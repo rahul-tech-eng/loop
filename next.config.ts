@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // remove or set to false if you had experimental.turbo
 };
 
 export default nextConfig;
