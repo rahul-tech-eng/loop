@@ -1,7 +1,7 @@
- import type { NextConfig } from "next";
+ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  // remove or set to false if you had experimental.turbo
-};
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
+}
 
-export default nextConfig;
+export default nextConfig
