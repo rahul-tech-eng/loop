@@ -39,8 +39,8 @@ async function main() {
   await db.feedback.create({
     data: {
       content: "Onboarding took forever, couldn't figure out how to invite my team.",
-      channel: Channel.SUPPORT_TICKET,
-      sentiment: Sentiment.NEG,
+      channel: Channel.SUPPORT,
+      sentiment: Sentiment.NEGATIVE,
       sentimentScore: -0.8,
       status: Status.NEW,
       workspaceId: workspace.id,
