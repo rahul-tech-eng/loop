@@ -48,7 +48,7 @@ async function main() {
   })
 
   console.log("Seed complete!")
-  console.log("  admin@acme.com / password12")
+  console.log("  admin@acme.com / password123")
   console.log("  analyst@acme.com / password123")
   console.log("  viewer@acme.com / password123")
 }

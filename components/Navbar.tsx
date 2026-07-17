@@ -18,6 +18,7 @@ export default function Navbar() {
             Team
           </Link>
         )}
+        <a href="/inbox">Inbox</a>
       </div>
       <div className="flex items-center gap-4">
         <span className="text-sm text-gray-300">
