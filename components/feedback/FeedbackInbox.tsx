@@ -52,6 +52,18 @@ export default function FeedbackInbox() {
 
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
+  const [reclassifyingId, setReclassifyingId] = useState<string | null>(null)
+
+const reclassify = async (feedbackId: string) => {
+  setReclassifyingId(feedbackId)
+  await fetch("/api/feedback/classify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ feedbackId }),
+  })
+  await fetchFeedback()
+  setReclassifyingId(null)
+}
   const fetchFeedback = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({
@@ -267,6 +279,14 @@ export default function FeedbackInbox() {
                 >
                   {updatingId === item.id ? "..." : item.status}
                 </button>
+                <button
+                 onClick={() => reclassify(item.id)}
+                 disabled={reclassifyingId === item.id}
+                  className="text-xs px-2 py-1 rounded-full font-medium shrink-0
+                  bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors
+                   disabled:opacity-50 cursor-pointer">
+                 {reclassifyingId === item.id ? "..." : "Re-classify"}
+                 </button>
               </div>
               <div className="flex items-center gap-3 text-xs text-gray-400">
                 <span>{item.channel}</span>

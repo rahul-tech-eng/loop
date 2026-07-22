@@ -90,6 +90,8 @@ model Theme {
   workspaceId String
   workspace   Workspace      @relation(fields: [workspaceId], references: [id])
   feedback    FeedbackTheme[]
+
+   @@unique([name, workspaceId]) 
 }
 
 model FeedbackTheme {
