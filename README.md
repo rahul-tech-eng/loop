@@ -143,7 +143,7 @@ npm run seed
 ---
 
 ## 📁 Project Structure
-
+```Text
 loop/
 ├── app/
 │ ├── (auth)/ # Login, signup pages
@@ -172,18 +172,27 @@ loop/
 └── seed.ts # Seed script
 
 
----
+```
 
 ## 📸 Screenshots
 
-> Add screenshots of your app here
-
 - Dashboard
+  ![Dashboard](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Dashboard.png)
+  
 - Feedback Inbox
+  ![Feedback](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Feedback%20Inbox.png)
+  
 - Themes page
+  ![Themes](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Themes.png)
+  
 - Trends view
+  ![Trends](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Trends.png)
+  
 - Ask LOOP
+  ![Ask loop](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Ask%20loop.png)
+  
 - VoC Report
+  ![VoC Report](https://github.com/rahul-tech-eng/loop/blob/ce0d4fa176e48c7392f4b066a95562922be271fa/assests/Reports.png)
 
 ---
 
