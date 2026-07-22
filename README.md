@@ -8,7 +8,7 @@ LOOP is a corporate-grade web application that helps companies make sense of cus
 
 ## 🚀 Live Demo
 
-**Production URL:** `https://your-vercel-url.vercel.app`
+**Production URL:** `https://loop-pi-six.vercel.app/`
 
 **Demo credentials:**
 
@@ -86,7 +86,7 @@ Database (PostgreSQL via Prisma ORM)
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/your-username/loop.git
+git clone https://github.com/rahul-tech-eng/loop.git
 cd loop
 ```
 
