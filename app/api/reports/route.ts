@@ -12,6 +12,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (session.user.role === "VIEWER") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { periodStart, periodEnd, title } = await req.json();
   if (!periodStart || !periodEnd) {
     return NextResponse.json({ error: "Period is required" }, { status: 400 });

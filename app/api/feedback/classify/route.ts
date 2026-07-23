@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { classifyFeedback } from "@/lib/ai"; // ✅ only this
+import { classifyFeedback } from "@/lib/ai"; 
 import { Sentiment } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Feedback not found" }, { status: 404 });
   }
 
-  // ✅ Skip if already classified - saves API calls
+  
   if (feedback.sentiment !== null) {
     return NextResponse.json({ success: true, message: "Already classified" });
   }

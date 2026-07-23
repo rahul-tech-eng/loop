@@ -1,6 +1,7 @@
  "use client"
 
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import ReportGenerator from "./ReportGenerator"
 
 interface Report {
@@ -10,8 +11,9 @@ interface Report {
   periodEnd: string
   createdAt: string
 }
-
-export default function ReportsList() {
+ export default function ReportsList() {
+  const { data: session } = useSession()
+  const isViewer = session?.user?.role === "VIEWER"
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -102,7 +104,7 @@ export default function ReportsList() {
 
   return (
     <div className="space-y-6">
-      <ReportGenerator onGenerated={fetchReports} />
+      {!isViewer && <ReportGenerator onGenerated={fetchReports} />}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Reports list */}
