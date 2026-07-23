@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useSession } from "next-auth/react"
 
 interface UploadError {
   row: number;
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export default function CsvUpload({ onSuccess }: Props) {
+  const { data: session } = useSession()
+const isViewer = session?.user?.role === "VIEWER"
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -69,6 +72,7 @@ export default function CsvUpload({ onSuccess }: Props) {
     } finally {
       setLoading(false);
     }
+    if (isViewer) return null
   };
 
   return (

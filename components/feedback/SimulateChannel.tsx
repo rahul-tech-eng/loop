@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 
 const CHANNELS = [
   { key: "SUPPORT", label: "Support Tickets", icon: "🎫" },
@@ -14,6 +15,8 @@ interface Props {
 }
 
 export default function SimulateChannel({ onSuccess }: Props) {
+  const { data: session } = useSession()
+const isViewer = session?.user?.role === "VIEWER"
   const [loading, setLoading] = useState<string | null>(null)
   const [results, setResults] = useState<Record<string, number>>({})
 
@@ -35,6 +38,7 @@ export default function SimulateChannel({ onSuccess }: Props) {
     } finally {
       setLoading(null)
     }
+    if (isViewer) return null
   }
 
   return (

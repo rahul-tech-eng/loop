@@ -1,6 +1,7 @@
  "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import { useSession } from "next-auth/react"
 
 interface FeedbackItem {
   id: string
@@ -31,6 +32,8 @@ const SENTIMENT_COLORS: Record<string, string> = {
 }
 
 export default function FeedbackInbox() {
+  const { data: session } = useSession()
+const isViewer = session?.user?.role === "VIEWER"
   const [items, setItems] = useState<FeedbackItem[]>([])
   const [loading, setLoading] = useState(true)
  // search
@@ -105,6 +108,7 @@ const reclassify = async (feedbackId: string) => {
   const hasActiveFilters = channel || sentiment || status || dateFrom || dateTo || search
 
   const updateStatus = async (id: string, currentStatus: string) => {
+     if (isViewer) return 
     setUpdatingId(id)
     const nextStatus = STATUS_NEXT[currentStatus]
     await fetch(`/api/feedback/${id}`, {
@@ -114,6 +118,7 @@ const reclassify = async (feedbackId: string) => {
     })
     await fetchFeedback()
     setUpdatingId(null)
+    
   }
 
   return (
@@ -270,23 +275,35 @@ const reclassify = async (feedbackId: string) => {
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-sm text-gray-800 flex-1">{item.content}</p>
-                <button
-                  onClick={() => updateStatus(item.id, item.status)}
-                  disabled={updatingId === item.id}
-                  className={`text-xs px-2 py-1 rounded-full font-medium shrink-0
-                    ${STATUS_COLORS[item.status]} hover:opacity-80 transition-opacity
-                    disabled:opacity-50 cursor-pointer`}
-                >
-                  {updatingId === item.id ? "..." : item.status}
-                </button>
-                <button
-                 onClick={() => reclassify(item.id)}
-                 disabled={reclassifyingId === item.id}
-                  className="text-xs px-2 py-1 rounded-full font-medium shrink-0
-                  bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors
-                   disabled:opacity-50 cursor-pointer">
-                 {reclassifyingId === item.id ? "..." : "Re-classify"}
-                 </button>
+                 
+                {!isViewer ? (
+                  <button
+                    onClick={() => updateStatus(item.id, item.status)}
+                    disabled={updatingId === item.id}
+                    className={`text-xs px-2 py-1 rounded-full font-medium shrink-0
+                      ${STATUS_COLORS[item.status]} hover:opacity-80 transition-opacity
+                      disabled:opacity-50 cursor-pointer`}
+                  >
+                    {updatingId === item.id ? "..." : item.status}
+                  </button>
+                ) : (
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium shrink-0
+                    ${STATUS_COLORS[item.status]}`}>
+                    {item.status}
+                  </span>
+                )}
+
+                
+                {!isViewer && (
+                  <button
+                    onClick={() => reclassify(item.id)}
+                    disabled={reclassifyingId === item.id}
+                    className="text-xs px-2 py-1 rounded-full font-medium shrink-0
+                    bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors
+                    disabled:opacity-50 cursor-pointer">
+                    {reclassifyingId === item.id ? "..." : "Re-classify"}
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-3 text-xs text-gray-400">
                 <span>{item.channel}</span>
