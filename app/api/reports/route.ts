@@ -33,14 +33,28 @@ export async function POST(req: NextRequest) {
     orderBy: { createdAt: "desc" },
   });
 
-  if (feedback.length === 0) {
+  if (feedback.length === 0) 
+    {
     return NextResponse.json(
       { error: "No feedback found for this period" },
       { status: 400 }
     );
   }
 
-  // 2. Pre-compute stats (so Gemini doesn't hallucinate numbers)
+  const existingReport = await db.report.findFirst({
+    where: {
+      workspaceId,
+      periodStart: start,
+      periodEnd: end,
+    },
+  });
+
+  if (existingReport) {
+    return NextResponse.json({ success: true, report: existingReport });
+  }
+
+   
+  // 2. Pre-compute stat
   const total = feedback.length;
   const positive = feedback.filter((f) => f.sentiment === "POSITIVE").length;
   const negative = feedback.filter((f) => f.sentiment === "NEGATIVE").length;
@@ -102,11 +116,12 @@ Keep it professional and concise — something a Head of Product could forward t
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
     });
 
-    const content = response.text ?? "Could not generate report.";
+     const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
+     const content = text ?? "Could not generate report.";
 
     // 4. Save report to database
     const report = await db.report.create({

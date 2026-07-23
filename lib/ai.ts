@@ -42,7 +42,7 @@ Respond with ONLY a valid JSON object — no markdown, no explanation, no code f
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash-lite",
+        model: "gemini-3-flash-preview",
         contents: prompt,
       });
 

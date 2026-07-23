@@ -68,7 +68,7 @@ Give a clear, concise answer in 2-3 sentences. Reference specific feedback items
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
     });
 
