@@ -198,7 +198,7 @@ loop/
 
 ## 🎥 Demo Video
 
-![video link ](https://drive.google.com/file/d/1wzvDbT4P1ohBCbBIvmw03QK7bxfVmGb9/view?usp=drivesdk)
+`https://drive.google.com/file/d/1wzvDbT4P1ohBCbBIvmw03QK7bxfVmGb9/view?usp=drivesdk`
 
 ---
 
