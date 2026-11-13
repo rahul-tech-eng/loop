@@ -9,8 +9,8 @@ export default function Navbar() {
   const role = (session?.user as any)?.role;
 
   return (
-      <nav className="w-full bg-gray-900 text-white px-4 py-3 flex items-center justify-between gap-4">
-  {/* Links  */}
+    <nav className="sticky top-0 z-40 w-full bg-gray-900 text-white px-4 py-3 flex items-center justify-between gap-4 shadow-md">
+      {/* Links  */}
   <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide min-w-0">
     <span className="text-xl font-bold text-purple-400 shrink-0">LOOP</span>
     <Link href="/dashboard" className="text-sm text-gray-300 hover:text-white shrink-0">
