@@ -3,6 +3,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Footer from "@/components/Footer"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -32,15 +33,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Sign in to LOOP</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="mt-1 w-full border rounded-md px-3 py-2 text-sm" required />
-          </div>
+    <div className="min-h-screen flex flex-col justify-between bg-gray-50">
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Sign in to LOOP</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                className="mt-1 w-full border rounded-md px-3 py-2 text-sm" required />
+            </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Password</label>
             <div className="relative mt-1">
@@ -102,10 +104,12 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-        <p className="mt-4 text-sm text-gray-600">
-          No account? <Link href="/signup" className="text-indigo-600 hover:underline">Sign up</Link>
-        </p>
+          <p className="mt-4 text-sm text-gray-600">
+            No account? <Link href="/signup" className="text-indigo-600 hover:underline">Sign up</Link>
+          </p>
+        </div>
       </div>
+      <Footer />
     </div>
   )
 }
