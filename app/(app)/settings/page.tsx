@@ -1,7 +1,13 @@
- 'use client';
+'use client';
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 export default function SettingsPage() {
+  const { data: session, status } = useSession();
+  const role = (session?.user as any)?.role;
+  const currentUserId = (session?.user as any)?.id;
+
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,6 +17,10 @@ export default function SettingsPage() {
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState('');
   const [inviteSuccess, setInviteSuccess] = useState('');
+
+  const [memberToDelete, setMemberToDelete] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const fetchMembers = async (isInitial = false) => {
     if (isInitial) setLoading(true);
@@ -27,10 +37,19 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    fetchMembers(true);
-  }, []);
+    if (status === 'authenticated' && role === 'ADMIN') {
+      fetchMembers(true);
+    } else if (status === 'authenticated' && role !== 'ADMIN') {
+      setLoading(false);
+    }
+  }, [status, role]);
 
   const handleInvite = async () => {
+    if (role !== 'ADMIN') {
+      setInviteError('Only administrators can add new members.');
+      return;
+    }
+
     setInviting(true);
     setInviteError('');
     setInviteSuccess('');
@@ -63,14 +82,79 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <p className="text-gray-500">Loading members...</p>;
+  const handleRemoveMember = async () => {
+    if (!memberToDelete) return;
+    if (role !== 'ADMIN') {
+      setActionMessage({ type: 'error', text: 'Only administrators can remove team members.' });
+      return;
+    }
+
+    setDeleting(true);
+    setActionMessage(null);
+
+    try {
+      const res = await fetch(`/api/members?id=${memberToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+      setDeleting(false);
+
+      if (!res.ok) {
+        setActionMessage({ type: 'error', text: data.error || 'Failed to remove member' });
+      } else {
+        setActionMessage({ type: 'success', text: `${memberToDelete.name} has been removed from the team.` });
+        setMembers(prev => prev.filter(m => m.id !== memberToDelete.id));
+        setMemberToDelete(null);
+        setTimeout(() => setActionMessage(null), 3500);
+      }
+    } catch {
+      setDeleting(false);
+      setActionMessage({ type: 'error', text: 'An unexpected error occurred while removing member.' });
+    }
+  };
+
+  if (status === 'loading' || (loading && role === 'ADMIN')) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <p className="text-gray-500 text-sm">Loading team settings...</p>
+      </div>
+    );
+  }
+
+  // Access control check: Only ADMIN can view and manage team settings
+  if (status === 'authenticated' && role !== 'ADMIN') {
+    return (
+      <div className="max-w-md mx-auto mt-12 bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center">
+        <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 className="text-lg font-bold text-gray-900 mb-2">Admin Access Required</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          Only workspace administrators have permission to add, view, or remove team members.
+        </p>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition"
+        >
+          Return to Dashboard
+        </Link>
+      </div>
+    );
+  }
+
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Manage users and roles in your workspace</p>
+        </div>
         <button
           onClick={() => {
             setShowModal(true);
@@ -85,37 +169,81 @@ export default function SettingsPage() {
         </button>
       </div>
 
+      {/* Action Notification Banner */}
+      {actionMessage && (
+        <div
+          className={`mb-4 px-4 py-3 rounded-lg text-sm flex items-center justify-between ${
+            actionMessage.type === 'success'
+              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
+          }`}
+        >
+          <span>{actionMessage.text}</span>
+          <button
+            onClick={() => setActionMessage(null)}
+            className="text-xs font-semibold ml-4 opacity-75 hover:opacity-100"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Table */}
-      <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Name</th>
-            <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Email</th>
-            <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.length === 0 ? (
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        <table className="w-full">
+          <thead className="bg-gray-100 border-b border-gray-200">
             <tr>
-              <td colSpan={3} className="px-4 py-8 text-center text-sm text-gray-500">
-                No team members found.
-              </td>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Name</th>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Email</th>
+              <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">Role</th>
+              <th className="text-right px-4 py-3 text-sm font-semibold text-gray-600">Actions</th>
             </tr>
-          ) : (
-            members.map(m => (
-              <tr key={m.id} className="border-t border-gray-200">
-                <td className="px-4 py-3 text-gray-900">{m.name}</td>
-                <td className="px-4 py-3 text-gray-600">{m.email}</td>
-                <td className="px-4 py-3">
-                  <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">
-                    {m.role}
-                  </span>
+          </thead>
+          <tbody>
+            {members.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-sm text-gray-500">
+                  No team members found.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              members.map(m => {
+                const isCurrentUser = m.id === currentUserId;
+                return (
+                  <tr key={m.id} className="border-t border-gray-200 hover:bg-gray-50/70 transition">
+                    <td className="px-4 py-3 text-gray-900 font-medium">
+                      {m.name}
+                      {isCurrentUser && (
+                        <span className="ml-2 text-[11px] font-normal text-purple-700 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded">
+                          You
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">{m.email}</td>
+                    <td className="px-4 py-3">
+                      <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded font-medium">
+                        {m.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {isCurrentUser ? (
+                        <span className="text-xs text-gray-400 italic">Owner</span>
+                      ) : (
+                        <button
+                          onClick={() => setMemberToDelete(m)}
+                          className="text-red-600 hover:text-red-800 text-xs font-medium px-2.5 py-1 rounded hover:bg-red-50 border border-transparent hover:border-red-200 transition"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Invite Modal */}
       {showModal && (
@@ -231,6 +359,40 @@ export default function SettingsPage() {
               </button>
               <button
                 onClick={() => setShowModal(false)}
+                className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-2 rounded-lg hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Member Confirmation Modal */}
+      {memberToDelete && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+            <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-3">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Remove Team Member</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to remove <span className="font-semibold text-gray-900">{memberToDelete.name}</span> ({memberToDelete.email}) from the team? They will no longer have access to this workspace.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleRemoveMember}
+                disabled={deleting}
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg transition"
+              >
+                {deleting ? 'Removing...' : 'Yes, Remove Member'}
+              </button>
+              <button
+                onClick={() => setMemberToDelete(null)}
+                disabled={deleting}
                 className="flex-1 border border-gray-300 text-gray-700 text-sm font-medium py-2 rounded-lg hover:bg-gray-50 transition"
               >
                 Cancel
