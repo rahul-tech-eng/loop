@@ -22,3 +22,5 @@ export async function GET() {
 
   return NextResponse.json(members);
 }
+
+export { POST } from "./invite/route";
