@@ -2,7 +2,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Footer from "@/components/Footer"
 
 export default function SignupPage() {
   const router = useRouter()
@@ -35,14 +34,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-gray-50">
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Create your LOOP account</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Create your LOOP account</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" value={name} onChange={e => setName(e.target.value)}
                 className="mt-1 w-full border rounded-md px-3 py-2 text-sm" required />
             </div>
           <div>
@@ -111,12 +109,10 @@ export default function SignupPage() {
             {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
-          <p className="mt-4 text-sm text-gray-600">
-            Already have an account? <Link href="/login" className="text-indigo-600 hover:underline">Sign in</Link>
-          </p>
-        </div>
+        <p className="mt-4 text-sm text-gray-600">
+          Already have an account? <Link href="/login" className="text-indigo-600 hover:underline">Sign in</Link>
+        </p>
       </div>
-      <Footer />
     </div>
   )
 }
