@@ -5,18 +5,9 @@ export default function Footer() {
     <footer className="w-full bg-gray-900 border-t border-gray-800 text-gray-400 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-gray-800">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl font-bold text-purple-400">LOOP</span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Operational
-              </span>
-            </div>
-            <p className="mt-1 text-xs text-gray-400 max-w-sm">
-              AI Customer Feedback Intelligence Platform. Transform unstructured customer feedback into actionable insights.
-            </p>
-          </div>
+          <p className="text-xs text-gray-400 max-w-sm">
+            AI Customer Feedback Intelligence Platform. Transform unstructured customer feedback into actionable insights.
+          </p>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
             <Link href="/dashboard" className="text-gray-400 hover:text-white transition">
